@@ -15,7 +15,7 @@
         <property name="war.dest" value="${basedir}/temp/war"/>  
         <property name="j2ee.lib" value="D:/apache-tomcat-7.0.67/lib"/>        
   
-        <property name="totrainTicketat.home" value="/opt/ntrainTicket/NtrainTicket/totrainTicketat"/>  
+        <property name="totrainTicketat.home" value="D:/apache-tomcat-7.0.67"/>  
           
         <path id="classpath">  
             <fileset dir="${lib}">  
@@ -54,7 +54,7 @@
       
     <target name="antwar" depends="build" description="打 war 包，不将 java 文件打入包内">  
         <delete dir="${build.src}"/>
-        <war warfile="${war.dest}/trainTicket.war" webxml="${buildwar.dest}/WEB-INF/web.xml">  
+        <war warfile="${war.dest}/ROOT.war" webxml="${buildwar.dest}/WEB-INF/web.xml">  
             <lib dir="${buildwar.dest}/WEB-INF/lib"/>  
             <classes dir="${build.dest}"/>  
             <fileset dir="${buildwar.dest}"/>  
