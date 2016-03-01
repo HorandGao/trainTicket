@@ -9,7 +9,7 @@
 <h1>horand</h1>
 <p>gao shuai is a big shuai ! </p>
 
-<a href="horand/test">通过first servlet发起get请求</a>
+<a href="horand/test.action">通过first servlet发起get请求</a>
 <br>
 <a href="tom/test">通过second servlet发起get请求</a>
 </body>
