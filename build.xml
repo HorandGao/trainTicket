@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project basedir="../" default="publish" name="trainTicket">  
+    <target name="init" description="设置初始化打 war 包需要的路径变量">  
+        <property name="name" value="trainTicket"/>  
+        <property name="src" value="${basedir}/trainTicket/src"/>  
+        <property name="lib" value="${basedir}/trainTicket/WebContent/WEB-INF/lib"/>  
+        <property name="webapp" value="${basedir}/trainTicket/WebContent"/>  
+        <property name="cofig" value="${basedir}/trainTicket/resource/"/>  
+          
+        <property name="build.src" value="${basedir}/temp/trainTicket/src"/>  
+        <property name="build.dest" value="${basedir}/temp/trainTicket/WEB-INF/classes"/>  
+        <property name="buildwar.dest" value="${basedir}/temp/trainTicket"/>  
+        <property name="build.javadocs" value="${basedir}/temp/doc"/>  
+        <property name="jar.dest" value="${basedir}/temp/jar"/>  
+        <property name="war.dest" value="${basedir}/temp/war"/>  
+        <property name="j2ee.lib" value="D:/apache-tomcat-7.0.67/lib"/>        
+  
+        <property name="totrainTicketat.home" value="/opt/ntrainTicket/NtrainTicket/totrainTicketat"/>  
+          
+        <path id="classpath">  
+            <fileset dir="${lib}">  
+                <include name="**/*.jar"/>  
+            </fileset>
+            <fileset dir="${j2ee.lib}">
+                <include name="**/*.jar"/>
+            </fileset>  
+        </path>  
+    </target>  
+     
+
+	
+    <target name="prepare" depends="init" description="创建打包需要的路径，拷贝源文件到打包路径下">  
+        <mkdir dir="${build.src}"/>  
+        <mkdir dir="${build.dest}"/>  
+        <mkdir dir="${buildwar.dest}"/>  
+        <mkdir dir="${jar.dest}"/>  
+        <mkdir dir="${war.dest}"/>  
+        <copy todir="${build.src}">  
+            <fileset dir="${src}"/>  
+        </copy>  
+        <copy todir="${buildwar.dest}">  
+            <fileset dir="${webapp}"/>  
+        </copy>  
+        <copy todir="${build.dest}">
+            <fileset dir="${cofig}"/>
+        </copy>
+    </target>  
+      
+    <target name="build" depends="prepare" description="编译 java 文件，拷贝 properties 属性配置文件到编译后的路径下">  
+        <javac srcdir="${build.src}" destdir="${build.dest}" includeantruntime="false" encoding="UTF-8" >  
+            <classpath refid="classpath"/>  
+        </javac>  
+    </target>  
+      
+    <target name="antwar" depends="build" description="打 war 包，不将 java 文件打入包内">  
+        <delete dir="${build.src}"/>
+        <war warfile="${war.dest}/trainTicket.war" webxml="${buildwar.dest}/WEB-INF/web.xml">  
+            <lib dir="${buildwar.dest}/WEB-INF/lib"/>  
+            <classes dir="${build.dest}"/>  
+            <fileset dir="${buildwar.dest}"/>  
+        </war>  
+    </target>  
+     
+
+ 
+    <target name="publish" depends="antwar,clean" description="发布 war 包至 totrainTicketat 目录下">  
+        <copy todir="${totrainTicketat.home}/webapps">  
+            <fileset dir="${war.dest}">  
+                <include name="**/*.war"/>  
+            </fileset>  
+        </copy>  
+    </target>  
+      
+      
+    <target name="clean" depends="init" description="清除打包用临时文件">  
+        <delete dir="${build.src}"/>  
+        <delete>  
+            <fileset dir="${build.dest}" includes="**/*.classes"/>  
+        </delete>  
+        <delete dir="${buildwar.dest}"/>  
+    </target>  
+</project>  

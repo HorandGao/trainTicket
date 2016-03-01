@@ -33,7 +33,7 @@ public class secondTest extends HttpServlet {
 		response.setCharacterEncoding("UTF-8");
 		
 		PrintWriter out = response.getWriter();
-		out.println("<h2>This is the second Servlet!!!¸ß´¿</h2><br><a href='/trainTicket'>·µ»ØÊ×Ò³</a>");
+		out.println("<h2>This is the second Servlet!!!</h2><br><a href='/trainTicket'>è¿”å›žé¦–é¡µ</a>");
 	}
 
 	/**
