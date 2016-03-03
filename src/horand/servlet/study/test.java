@@ -57,11 +57,37 @@ public class test extends HttpServlet {
             while (rs.next()) {
                  out.println(rs.getString("name")+"         "+rs.getString("sex")+"<br/>");
             }
+         // 关闭记录集
+            if (rs != null) {
+                try {
+                    rs.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+ 
+            // 关闭声明
+            if (stmt != null) {
+                try {
+                	stmt.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+ 
+            // 关闭链接对象
+            if (conn != null) {
+                try {
+                    conn.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
             
       } catch (Exception e) {
             e.printStackTrace();
       }
-
+      
  }
     public String resultSetToJson(ResultSet rs) throws SQLException,JSONException  
     {  
