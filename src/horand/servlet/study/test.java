@@ -40,23 +40,41 @@ public class test extends HttpServlet {
     public void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
-      response.setContentType("text/html;charset=UTF-8");
+      response.setContentType("application/json; charset=utf-8");
       PrintWriter out = response.getWriter();
       Statement stmt = null;
       ResultSet rs = null;
+      String req_name = request.getParameter("name");
+      String req_password = request.getParameter("password");
 
       try {
             Class.forName("com.mysql.jdbc.Driver");
-            Connection conn = DriverManager.getConnection("jdbc:mysql://115.28.158.46:3306/test", "root", "horand");
+            Connection conn = DriverManager.getConnection("jdbc:mysql://115.28.158.46:3306/train", "root", "horand");
            
             stmt = conn.createStatement();
-            rs = stmt.executeQuery("select name,sex from user");
-
-            out.println("<html><head><title>读取数据库信息</title><head><body>");
-            out.println(resultSetToJson(rs));
-            while (rs.next()) {
-                 out.println(rs.getString("name")+"         "+rs.getString("sex")+"<br/>");
+            
+            rs = stmt.executeQuery("select count(*) as rowcount from user where name ='"+ req_name+"' and password='"+req_password+" '");
+            rs.next();
+            int rowcount = rs.getInt("rowcount");
+//            String user_name = "";
+//            String user_pwd = "";
+            //out.println("<html><head><title>读取数据库信息</title><head><body>");
+            //out.write(resultSetToJson(rs));
+//            while (rs.next()) {
+//                 //out.println(rs.getString("name")+"         "+rs.getString("sex")+"<br/>");
+//            	user_name = rs.getString("name");
+//            	user_pwd = rs.getString("password");
+//            }
+            String result = "{\"success\",\"0\"}";
+            
+//            if(req_name.equals(user_name) && req_password.equals(user_pwd)){
+//            result= "{\"success\":\"1\"}";
+//            }
+            if(rowcount>0){
+            	result= "{\"success\":\"1\"}";
             }
+            
+            out.write(result);
          // 关闭记录集
             if (rs != null) {
                 try {
