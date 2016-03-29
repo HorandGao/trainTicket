@@ -83,7 +83,7 @@ public class test extends HttpServlet {
                     e.printStackTrace();
                 }
             }
- 
+  
             // 关闭声明
             if (stmt != null) {
                 try {
