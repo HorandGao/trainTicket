@@ -48,7 +48,7 @@ public class addUser extends HttpServlet {
 	            String reqPwd = request.getParameter("pwd");
 	            String reqIDcard = request.getParameter("idcard");
 	            String reqPhone = request.getParameter("phone");
-	            String reqRealName = URLDecoder.decode(request.getParameter("realName"),"UTF-8");
+	            String reqRealName = request.getParameter("realName");
 	            if(reqName==null || reqPwd==null || reqIDcard==null || reqPhone==null || reqRealName==null ||
 	            		reqName=="" || reqPwd=="" || reqIDcard=="" || reqPhone=="" || reqRealName==""){
 	            	out.write("{\"success\":\"0\"}");
