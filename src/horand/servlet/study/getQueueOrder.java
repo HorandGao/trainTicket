@@ -51,7 +51,7 @@ public class getQueueOrder extends HttpServlet {
 	            
 	            String req_name = request.getParameter("name");
 	            //还得加车次和时间用于筛选！！！！！
-	            rs = stmt.executeQuery("select * from bookings join (select trainNum as train_num,srcDate as src_date, max(queneNum) as maxQueueNum from bookings join user on user.id=bookings.userId and orderType=0 group by trainNum,srcDate) as queue on trainNum=train_num and srcDate=src_date join user on userId=user.id and name='"+req_name+"'");
+	            rs = stmt.executeQuery("select * from bookings join (select trainNum as train_num,srcDate as src_date, max(queneNum) as maxQueueNum from bookings join user on user.id=bookings.userId and orderType=0 and orderDelete=0 group by trainNum,srcDate) as queue on trainNum=train_num and srcDate=src_date join user on userId=user.id and orderDelete=0 and name='"+req_name+"'");
 	            out.write(resultSetToJson(rs));
 	         // �رռ�¼��
 	            if (rs != null) {
