@@ -20,16 +20,16 @@ import net.sf.json.JSONException;
 import net.sf.json.JSONObject;
 
 /**
- * Servlet implementation class cancelOrder
+ * Servlet implementation class getPerson
  */
-@WebServlet("/cancelOrder.action")
-public class cancelOrder extends HttpServlet {
+@WebServlet("/getPerson.action")
+public class getPerson extends HttpServlet {
 	private static final long serialVersionUID = 1L;
        
     /**
      * @see HttpServlet#HttpServlet()
      */
-    public cancelOrder() {
+    public getPerson() {
         super();
         // TODO Auto-generated constructor stub
     }
@@ -37,27 +37,39 @@ public class cancelOrder extends HttpServlet {
 	/**
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		response.setContentType("application/json; charset=utf-8");
-	      PrintWriter out = response.getWriter();
+	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		request.setCharacterEncoding("utf-8");
+		  response.setCharacterEncoding("utf-8");
+		  response.setContentType("application/json; charset=utf-8");
+		  //response.setContentType("text/html; charset=utf-8");
+		  PrintWriter out = response.getWriter();
 	      Statement stmt = null;
-	      int rs = 100;
+	      ResultSet rs = null;
 
 	      try {
 	            Class.forName("com.mysql.jdbc.Driver");
-	            Connection conn = DriverManager.getConnection("jdbc:mysql://115.28.158.46:3306/train", "root", "horand");
+	            Connection conn = DriverManager.getConnection("jdbc:mysql://115.28.158.46:3306/train?user=root&password=horand&useUnicode=true&characterEncoding=utf8");
 	           
 	            stmt = conn.createStatement();
-	            String req_orderNum = request.getParameter("orderNum");
-	            //得加一个 date 以及userid 才能取消
-	            rs = stmt.executeUpdate("update bookings set orderDelete=1 where orderNum="+req_orderNum);
-	            if(rs>=1){
-	            	out.write("{\"success\":\"1\"}");
+	            String str_name = request.getParameter("name");
+	            
+	            if(request.getMethod().equalsIgnoreCase("GET"))
+	            {
+	            	str_name = new String(str_name.getBytes("iso8859-1"),"utf-8");
 	            }
-	            else{
-	            	out.write("{\"success\":\"0\"}");
+
+	            String str_sql = "select name,idcard from person where user_name='"+str_name+"' union select realName,idcard from user where name='"+str_name+"'";
+	            rs = stmt.executeQuery(str_sql);
+	            
+	            out.write(resultSetToJson(rs));
+	            
+	            if (rs != null) {
+	                try {
+	                    rs.close();
+	                } catch (SQLException e) {
+	                    e.printStackTrace();
+	                }
 	            }
-	  
 	            if (stmt != null) {
 	                try {
 	                	stmt.close();
@@ -79,20 +91,24 @@ public class cancelOrder extends HttpServlet {
 	      }
 	}
 
+	/**
+	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
+	 */
+	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		// TODO Auto-generated method stub
+		doGet(request, response);
+	}
+
 	public String resultSetToJson(ResultSet rs) throws SQLException,JSONException  
     {  
-       // json数组  
+
        JSONArray array = new JSONArray();  
         
-       // 获取列数  
        ResultSetMetaData metaData = rs.getMetaData();  
        int columnCount = metaData.getColumnCount();  
-        
-       // 遍历ResultSet中的每条数据  
         while (rs.next()) {  
             JSONObject jsonObj = new JSONObject();  
              
-            // 遍历每一列  
             for (int i = 1; i <= columnCount; i++) {  
                 String columnName =metaData.getColumnLabel(i);  
                 String value = rs.getString(columnName);  
@@ -103,13 +119,4 @@ public class cancelOrder extends HttpServlet {
         
        return array.toString();  
     }  
-
-	/**
-	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
-	 */
-	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		// TODO Auto-generated method stub
-		doGet(request, response);
-	}
-
 }
