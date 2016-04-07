@@ -39,9 +39,9 @@ public class addOrder extends HttpServlet {
 	 */
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		request.setCharacterEncoding("utf-8");
-		  //response.setCharacterEncoding("utf-8");
+		  response.setCharacterEncoding("utf-8");
 		  response.setContentType("application/json; charset=utf-8");
-		  response.setContentType("text/html; charset=utf-8");
+		  //response.setContentType("text/html; charset=utf-8");
 		  PrintWriter out = response.getWriter();
 	      Statement stmt = null;
 	      ResultSet rs_query = null;
@@ -56,7 +56,7 @@ public class addOrder extends HttpServlet {
 	            int leftTicket=0;
 	            String[] idcard = request.getParameter("idcards").split("a");
 	            String str_trainNum = request.getParameter("trainNum");
-	            String str_userId = request.getParameter("userId");
+	            String str_email = request.getParameter("email");
 	            String str_srcStation="";
 	            String str_desStation="";
 	            String str_date = request.getParameter("date");
@@ -68,7 +68,7 @@ public class addOrder extends HttpServlet {
 	            String str_name1=request.getParameter("name1");
 	            String str_name2=request.getParameter("name2");
 	            String str_name3=request.getParameter("name3");
-	            
+	            String str_seatName="";
 	            if(request.getMethod().equalsIgnoreCase("GET"))
 	            {
 	            	str_name1 = new String(str_name1.getBytes("iso8859-1"),"utf-8");
@@ -89,13 +89,14 @@ public class addOrder extends HttpServlet {
 	            	str_startDateTime = str_date+" "+ rs_query.getString("train_goTime");
 	            	str_endDateTime = str_date +" "+ rs_query.getString("train_doneTime");
 	            	leftTicket = Integer.parseInt(rs_query.getString("leftTicket"+str_seatType));
+	            	str_seatName = rs_query.getString("seatType"+str_seatType);
 	            }
 	            if (rs_query != null) {
 	                rs_query.close();
 	            }
 	            
 	            
-	            String str_updateTicketNum = "update ticketInfo set leftTicket"+str_seatType+"=leftTicket"+str_seatType+"-1"
+	            String str_updateTicketNum = "update ticketInfo set leftTicket"+str_seatType+"=leftTicket"+str_seatType+"-"+(idcard.length-1)
 	            		+ " where trainNum='"+str_trainNum+"' and date='"+str_date+"'";
 	            if(leftTicket > 0){
 	            	rs = stmt.executeUpdate(str_updateTicketNum);
@@ -122,10 +123,10 @@ public class addOrder extends HttpServlet {
 	            }
 	            String str_insertOrder = "insert into bookings values(NULL,"
 	            		+ "'"+str_trainNum+"','"+str_srcStation+"','"+str_desStation+"',"
-	            		+ "'"+str_startDateTime+"','"+str_endDateTime+"',now(),"
-	            		+str_userId+",1,0,0,'"
+	            		+ "'"+str_startDateTime+"','"+str_endDateTime+"',now(),'"
+	            		+str_email+"',1,0,0,'"
 	            		+str_totalPrice+"','"
-	            		+id1+"','"+id2+"','"+id3+"','"+str_name1+"','"+str_name2+"','"+str_name3+"')";
+	            		+id1+"','"+id2+"','"+id3+"','"+str_name1+"','"+str_name2+"','"+str_name3+"','"+str_seatName+"')";
 	            
 	            //out.println(str_insertOrder);
 	           // rs = stmt.executeUpdate(str_updateTicketNum);

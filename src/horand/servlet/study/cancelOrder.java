@@ -39,18 +39,63 @@ public class cancelOrder extends HttpServlet {
 	 */
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		response.setContentType("application/json; charset=utf-8");
+		//response.setContentType("text/html; charset=utf-8");
 	      PrintWriter out = response.getWriter();
+	      Connection conn=null;
 	      Statement stmt = null;
 	      int rs = 100;
-
+	      ResultSet rs_query = null;
 	      try {
 	            Class.forName("com.mysql.jdbc.Driver");
-	            Connection conn = DriverManager.getConnection("jdbc:mysql://115.28.158.46:3306/train", "root", "horand");
+	            conn = DriverManager.getConnection("jdbc:mysql://115.28.158.46:3306/train?user=root&password=horand&useUnicode=true&characterEncoding=utf8");
 	           
+	            conn.setAutoCommit(false);
 	            stmt = conn.createStatement();
 	            String req_orderNum = request.getParameter("orderNum");
-	            //得加一个 date 以及userid 才能取消
+	            String str_date="";
+	            String str_trainNum="";
+	            String str_seatType="";
+	            int int_seatType=0;
+	            String str_orderType="0";
+	            int count=0;
+	            rs_query = stmt.executeQuery("select * from bookings where orderNum="+req_orderNum);
+	            //out.write(resultSetToJson(rs_query));
+	            while (rs_query.next()) {
+	            	str_date = rs_query.getString("srcDate").substring(0, 10);
+	            	str_trainNum = rs_query.getString("trainNum");
+	            	str_seatType = rs_query.getString("orderSeatType");
+	            	str_orderType = rs_query.getString("orderType");
+	            	if(!(rs_query.getString("personName1").equals(""))){
+	            		count++;
+	            	}
+	            	if(!(rs_query.getString("personName2").equals(""))){
+	            		count++;
+	            	}
+	            	if(!(rs_query.getString("personName3").equals(""))){
+	            		count++;
+	            	}
+	            }
+	            if(str_seatType.equals("商务座")||str_seatType.equals("软 卧")){
+	            	int_seatType = 1;
+	            }else if(str_seatType.equals("一等座")||str_seatType.equals("硬 卧")){
+	            	int_seatType = 2;
+	            }else if(str_seatType.equals("二等座")||str_seatType.equals("硬 座")){
+	            	int_seatType = 3;
+	            }
+	            
+	            if (rs_query != null) {
+	                rs_query.close();
+	            }
+
+	            //out.println(count+str_date+str_trainNum+int_seatType);
+	            
+	            if(!str_orderType.equals("0")){
+	            	rs = stmt.executeUpdate("update ticketInfo set leftTicket"+int_seatType+" = leftTicket"+int_seatType+" + "+count
+	            			+" where date='"+str_date+"' and trainNum='"+str_trainNum+"'");
+	            }
 	            rs = stmt.executeUpdate("update bookings set orderDelete=1 where orderNum="+req_orderNum);
+	            conn.commit();
+	            conn.setAutoCommit(true);
 	            if(rs>=1){
 	            	out.write("{\"success\":\"1\"}");
 	            }
@@ -75,6 +120,12 @@ public class cancelOrder extends HttpServlet {
 	            }
 	            
 	      } catch (Exception e) {
+	    	  try {
+				conn.rollback();
+			} catch (SQLException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
 	            e.printStackTrace();
 	      }
 	}

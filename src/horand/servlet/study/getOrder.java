@@ -49,7 +49,7 @@ public class getOrder extends HttpServlet {
 	           
 	            stmt = conn.createStatement();
 	            String req_name = request.getParameter("name");
-	            rs = stmt.executeQuery("select * from bookings join user on user.id=bookings.userId where orderDelete=0 and name='"+req_name+"'");
+	            rs = stmt.executeQuery("select * from bookings join user on user.name=bookings.email where orderDelete=0 and name='"+req_name+"'");
 	            out.write(resultSetToJson(rs));
 	         // �رռ�¼��
 	            if (rs != null) {
