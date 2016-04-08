@@ -9,20 +9,4 @@
     <welcome-file>default.htm</welcome-file>
     <welcome-file>default.jsp</welcome-file>
   </welcome-file-list>
-  <servlet>
-    <servlet-name>first</servlet-name>
-    <servlet-class>horand.servlet.study.test</servlet-class>
-  </servlet>
-  <servlet>
-    <servlet-name>second</servlet-name>
-    <servlet-class>horand.servlet.study.secondTest</servlet-class>
-  </servlet>
-  <servlet-mapping>
-    <servlet-name>first</servlet-name>
-    <url-pattern>/horand/test.action</url-pattern>
-  </servlet-mapping>
-  <servlet-mapping>
-    <servlet-name>second</servlet-name>
-    <url-pattern>/tom/test</url-pattern>
-  </servlet-mapping>
 </web-app>

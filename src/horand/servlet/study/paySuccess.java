@@ -14,16 +14,16 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 /**
- * Servlet implementation class addUser
+ * Servlet implementation class paySuccess
  */
-@WebServlet("/addUser.action")
-public class addUser extends HttpServlet {
+@WebServlet("/paySuccess.action")
+public class paySuccess extends HttpServlet {
 	private static final long serialVersionUID = 1L;
        
     /**
      * @see HttpServlet#HttpServlet()
      */
-    public addUser() {
+    public paySuccess() {
         super();
         // TODO Auto-generated constructor stub
     }
@@ -32,7 +32,7 @@ public class addUser extends HttpServlet {
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		  request.setCharacterEncoding("utf-8");
+		request.setCharacterEncoding("utf-8");
 		  response.setCharacterEncoding("utf-8");
 		  response.setContentType("application/json; charset=utf-8");
 		  PrintWriter out = response.getWriter();
@@ -44,22 +44,8 @@ public class addUser extends HttpServlet {
 	            Connection conn = DriverManager.getConnection("jdbc:mysql://115.28.158.46:3306/train?user=root&password=horand&useUnicode=true&characterEncoding=utf8");
 	           
 	            stmt = conn.createStatement();
-	            String reqName = request.getParameter("name");
-	            String reqPwd = request.getParameter("pwd");
-	            String reqIDcard = request.getParameter("idcard");
-	            String reqPhone = request.getParameter("phone");
-	            String reqRealName = request.getParameter("realName");
-	            
-	            if(request.getMethod().equalsIgnoreCase("GET"))
-	            {
-	            	reqRealName = new String(reqRealName.getBytes("iso8859-1"),"utf-8");
-	            }
-	            if(reqName==null || reqPwd==null || reqIDcard==null || reqPhone==null || reqRealName==null ||
-	            		reqName=="" || reqPwd=="" || reqIDcard=="" || reqPhone=="" || reqRealName==""){
-	            	out.write("{\"success\":\"0\"}");
-	            	return;
-	            }
-	            rs = stmt.executeUpdate("insert into user values(NULL,'"+reqName+"','"+reqPwd+"','"+reqIDcard+"',"+reqPhone+",'"+reqRealName+"')");
+	            String str_orderNum = request.getParameter("orderNum");
+	            rs = stmt.executeUpdate("update bookings set orderType=2 where orderNum="+str_orderNum);
 	            if(rs>=1){
 	            	out.write("{\"success\":\"1\"}");
 	            }
@@ -68,18 +54,25 @@ public class addUser extends HttpServlet {
 	            }
 	            out.write(rs);
 	            if (stmt != null) {
-	                stmt.close();
+	                try {
+	                	stmt.close();
+	                } catch (SQLException e) {
+	                    e.printStackTrace();
+	                }
 	            }
 	 
 	            if (conn != null) {
-	                conn.close();
+	                try {
+	                    conn.close();
+	                } catch (SQLException e) {
+	                    e.printStackTrace();
+	                }
 	            }
 	            
 	      } catch (Exception e) {
 	            e.printStackTrace();
 	      }
 	}
-
 	/**
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
 	 */
