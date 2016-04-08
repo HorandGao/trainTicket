@@ -89,6 +89,7 @@ public class getVerifyCode extends HttpServlet {
 			if(result_array.getJSONObject("alibaba_aliqin_fc_sms_num_send_response").getJSONObject("result").get("success").equals(true)){
 				out.write("{\"success\":\"1\"}");
 			}
+			
 		} catch (ApiException e) {
 			// TODO Auto-generated catch block
 			out.write("{\"success\":\"0\"}");
