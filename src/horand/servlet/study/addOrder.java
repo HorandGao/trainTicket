@@ -81,7 +81,7 @@ public class addOrder extends HttpServlet {
 	            String str_query="select * from trainInfo join ticketInfo on trainNum=train_num where trainNum='"+str_trainNum+"' and date='"+str_date+"' ";
 	            rs_query = stmt.executeQuery(str_query);
 	            //out.println(resultSetToJson(rs_query));
-	            
+
 	            while (rs_query.next()) {
 	                 //out.println(rs.getString("name")+"         "+rs.getString("sex")+"<br/>");
 	            	str_srcStation = rs_query.getString("train_src");
@@ -98,12 +98,7 @@ public class addOrder extends HttpServlet {
 	            
 	            String str_updateTicketNum = "update ticketInfo set leftTicket"+str_seatType+"=leftTicket"+str_seatType+"-"+(idcard.length-1)
 	            		+ " where trainNum='"+str_trainNum+"' and date='"+str_date+"'";
-	            if(leftTicket > 0){
-	            	rs = stmt.executeUpdate(str_updateTicketNum);
-	            }else{
-	            	//表面该类型座次已经售罄
-	            	//todo!!!
-	            }
+	            String str_insertOrder="";
 	            String id1="",id2="",id3="";
 	            if(idcard.length==4){
 	            	id1 = idcard[1];
@@ -121,24 +116,49 @@ public class addOrder extends HttpServlet {
 	            }else if(idcard.length==1){
 	            	id1 = id2 = id3 = "";
 	            }
-	            String str_insertOrder = "insert into bookings values(NULL,"
-	            		+ "'"+str_trainNum+"','"+str_srcStation+"','"+str_desStation+"',"
-	            		+ "'"+str_startDateTime+"','"+str_endDateTime+"',now(),'"
-	            		+str_email+"',1,0,0,'"
-	            		+str_totalPrice+"','"
-	            		+id1+"','"+id2+"','"+id3+"','"+str_name1+"','"+str_name2+"','"+str_name3+"','"+str_seatName+"')";
+	            if(leftTicket >= idcard.length-1){
+	            	rs = stmt.executeUpdate(str_updateTicketNum);
+	            	str_insertOrder = "insert into bookings values(NULL,"
+		            		+ "'"+str_trainNum+"','"+str_srcStation+"','"+str_desStation+"',"
+		            		+ "'"+str_startDateTime+"','"+str_endDateTime+"',now(),'"
+		            		+str_email+"',1,0,0,'"
+		            		+str_totalPrice+"','"
+		            		+id1+"','"+id2+"','"+id3+"','"+str_name1+"','"+str_name2+"','"+str_name3+"','"+str_seatName+"')";
+	            	 rs = stmt.executeUpdate(str_insertOrder);
+	 	            conn.commit();
+	 	            conn.setAutoCommit(true);
+	 	            if(rs>=1){
+	 	            	out.write("{\"success\":\"1\",\"msg\":\"成功\"}");
+	 	            }
+	 	            else{
+	 	            	out.write("{\"success\":\"0\",\"msg\":\"未知错误\"}");
+	 	            }
+	            }else{
+	            	//表面该类型座次已经售罄
+	            	//todo!!!
+	            	int queueNum = 0;
+	            	rs_query = stmt.executeQuery("select min(queneNum) as queueNum from bookings where orderDelete=0 and trainNum='"+str_trainNum+"' and srcDate = '"+str_startDateTime+"'");
+	            	while (rs_query.next()) {
+	            		queueNum = Integer.parseInt(rs_query.getString("queueNum")) - 1;
+		            }
+		            if (rs_query != null) {
+		                rs_query.close();
+		            }
+	            	
+	            	str_insertOrder = "insert into bookings values(NULL,"
+		            		+ "'"+str_trainNum+"','"+str_srcStation+"','"+str_desStation+"',"
+		            		+ "'"+str_startDateTime+"','"+str_endDateTime+"',now(),'"
+		            		+str_email+"',0,"+queueNum+",0,'"
+		            		+str_totalPrice+"','"
+		            		+id1+"','"+id2+"','"+id3+"','"+str_name1+"','"+str_name2+"','"+str_name3+"','"+str_seatName+"')";
+	            	
+	            	rs = stmt.executeUpdate(str_insertOrder);
+	 	            conn.commit();
+	 	            conn.setAutoCommit(true);
+	            	out.write("{\"success\":\"0\",\"msg\":\"余票不足,已进入排队系统\"}");
+	            }
 	            
-	            //out.println(str_insertOrder);
-	           // rs = stmt.executeUpdate(str_updateTicketNum);
-	            rs = stmt.executeUpdate(str_insertOrder);
-	            conn.commit();
-	            conn.setAutoCommit(true);
-	            if(rs>=1){
-	            	out.write("{\"success\":\"1\"}");
-	            }
-	            else{
-	            	out.write("{\"success\":\"0\"}");
-	            }
+	           
 	            
 	            if (stmt != null) {
 	                try {

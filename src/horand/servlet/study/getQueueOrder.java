@@ -45,13 +45,13 @@ public class getQueueOrder extends HttpServlet {
 
 	      try {
 	            Class.forName("com.mysql.jdbc.Driver");
-	            Connection conn = DriverManager.getConnection("jdbc:mysql://115.28.158.46:3306/train", "root", "horand");
+	            Connection conn = DriverManager.getConnection("jdbc:mysql://115.28.158.46:3306/train?user=root&password=horand&useUnicode=true&characterEncoding=utf8&autoReconnect=true&failOverReadOnly=false&maxReconnects=10");
 	           
 	            stmt = conn.createStatement();
-	            
 	            String req_name = request.getParameter("name");
+	            
 	            //还得加车次和时间用于筛选！！！！！
-	            rs = stmt.executeQuery("select * from bookings join (select trainNum as train_num,srcDate as src_date, max(queneNum) as maxQueueNum from bookings join user on user.name=bookings.email and orderType=0 and orderDelete=0 group by trainNum,srcDate) as queue on trainNum=train_num and srcDate=src_date join user on email=user.name and orderDelete=0 and name='"+req_name+"'");
+	            rs = stmt.executeQuery("select * from bookings join (select trainNum as train_num,srcDate as src_date, max(queneNum) as maxQueueNum from bookings join user on user.name=bookings.email and orderType=0 and orderDelete=0 group by trainNum,srcDate) as queue on trainNum=train_num and srcDate=src_date join user on email=user.name and orderDelete=0 and orderType=0 and name='"+req_name+"'");
 	            out.write(resultSetToJson(rs));
 	         // �رռ�¼��
 	            if (rs != null) {

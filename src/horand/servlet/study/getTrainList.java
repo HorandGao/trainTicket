@@ -48,7 +48,7 @@ public class getTrainList extends HttpServlet {
 
 	      try {
 	            Class.forName("com.mysql.jdbc.Driver");
-	            Connection conn = DriverManager.getConnection("jdbc:mysql://115.28.158.46:3306/train?user=root&password=horand&useUnicode=true&characterEncoding=utf8");
+	            Connection conn = DriverManager.getConnection("jdbc:mysql://115.28.158.46:3306/train?user=root&password=horand&useUnicode=true&characterEncoding=utf8&autoReconnect=true&failOverReadOnly=false&maxReconnects=10");
 	           
 	            stmt = conn.createStatement();
 	            String date = request.getParameter("date");

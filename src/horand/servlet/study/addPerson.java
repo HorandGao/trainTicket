@@ -5,7 +5,6 @@ import java.io.PrintWriter;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.sql.Statement;
 
 import javax.servlet.ServletException;
@@ -15,16 +14,16 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 /**
- * Servlet implementation class addUser
+ * Servlet implementation class addPerson
  */
-@WebServlet("/addUser.action")
-public class addUser extends HttpServlet {
+@WebServlet("/addPerson.action")
+public class addPerson extends HttpServlet {
 	private static final long serialVersionUID = 1L;
        
     /**
      * @see HttpServlet#HttpServlet()
      */
-    public addUser() {
+    public addPerson() {
         super();
         // TODO Auto-generated constructor stub
     }
@@ -33,7 +32,7 @@ public class addUser extends HttpServlet {
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		  request.setCharacterEncoding("utf-8");
+		request.setCharacterEncoding("utf-8");
 		  response.setCharacterEncoding("utf-8");
 		  response.setContentType("application/json; charset=utf-8");
 		  PrintWriter out = response.getWriter();
@@ -47,58 +46,30 @@ public class addUser extends HttpServlet {
 	           
 	            stmt = conn.createStatement();
 	            String reqName = request.getParameter("name");
-	            String reqPwd = request.getParameter("pwd");
-	            String reqIDcard = request.getParameter("idcard");
-	            String reqPhone = request.getParameter("phone");
 	            String reqRealName = request.getParameter("realName");
-	            String reqCode = request.getParameter("code");
+	            String reqIDcard = request.getParameter("idcard");
 	            
 	            if(request.getMethod().equalsIgnoreCase("GET"))
 	            {
 	            	reqRealName = new String(reqRealName.getBytes("iso8859-1"),"utf-8");
 	            }
-	            if(reqName==null || reqPwd==null || reqIDcard==null || reqPhone==null || reqRealName==null || reqCode==null ||
-	            		reqName=="" || reqPwd=="" || reqIDcard=="" || reqPhone=="" || reqRealName=="" ||reqCode==""){
+	            if(reqName==null || reqIDcard==null || reqRealName==null||
+	            		reqName=="" || reqIDcard=="" ||reqRealName=="" ){
 	            	out.write("{\"success\":\"0\",\"msg\":\"参数不能为空\"}");
 	            	return;
 	            }
-	            resultSet = stmt.executeQuery("select count(*) as rowcount from user where name ='"+reqName+"'");
+	            
+	            resultSet = stmt.executeQuery("select count(*) as rowcount from person where idcard ='"+reqIDcard+"' and user_name='"+reqName+"'");
 	            resultSet.next();
 	            int rowcount = resultSet.getInt("rowcount");
 	            if(rowcount==1){
-	            	out.write("{\"success\":\"0\",\"msg\":\"该邮箱已被注册\"}");
+	            	out.write("{\"success\":\"0\",\"msg\":\"该联系人已经存在\"}");
 	            	return;
 	            }
 	            resultSet.close();
 	            
 	            
-	            
-	            resultSet = stmt.executeQuery("select count(*) as rowcount from user where phoneNum ="+reqPhone);
-	            resultSet.next();
-	            rowcount = resultSet.getInt("rowcount");
-	            if(rowcount==1){
-	            	out.write("{\"success\":\"0\",\"msg\":\"该手机号已被注册\"}");
-	            	return;
-	            }
-	            resultSet.close();
-	            
-	            boolean sign_code = CreateRandomCode.judgePhoneNum(reqPhone, reqCode);
-	            if(!sign_code){
-	            	out.write("{\"success\":\"0\",\"msg\":\"验证码不正确\"}");
-	            	return;
-	            }
-	            
-	            resultSet = stmt.executeQuery("select count(*) as rowcount from user where idCard ='"+reqIDcard+"'");
-	            resultSet.next();
-	            rowcount = resultSet.getInt("rowcount");
-	            if(rowcount==1){
-	            	out.write("{\"success\":\"0\",\"msg\":\"该证件号已被注册\"}");
-	            	return;
-	            }
-	            resultSet.close();
-	            
-	            
-	            rs = stmt.executeUpdate("insert into user values(NULL,'"+reqName+"','"+reqPwd+"','"+reqIDcard+"',"+reqPhone+",'"+reqRealName+"')");
+	            rs = stmt.executeUpdate("insert into person values(NULL,'"+reqRealName+"','"+reqIDcard+"','"+reqName+"')");
 	            if(rs>=1){
 	            	out.write("{\"success\":\"1\",\"msg\":\"成功\"}");
 	            }

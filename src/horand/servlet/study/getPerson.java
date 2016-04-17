@@ -48,7 +48,7 @@ public class getPerson extends HttpServlet {
 
 	      try {
 	            Class.forName("com.mysql.jdbc.Driver");
-	            Connection conn = DriverManager.getConnection("jdbc:mysql://115.28.158.46:3306/train?user=root&password=horand&useUnicode=true&characterEncoding=utf8");
+	            Connection conn = DriverManager.getConnection("jdbc:mysql://115.28.158.46:3306/train?user=root&password=horand&useUnicode=true&characterEncoding=utf8&autoReconnect=true&failOverReadOnly=false&maxReconnects=10");
 	           
 	            stmt = conn.createStatement();
 	            String str_name = request.getParameter("name");
@@ -58,7 +58,7 @@ public class getPerson extends HttpServlet {
 	            	str_name = new String(str_name.getBytes("iso8859-1"),"utf-8");
 	            }
 
-	            String str_sql = "select name,idcard from person where user_name='"+str_name+"' union select realName,idcard from user where name='"+str_name+"'";
+	            String str_sql = "select name,idcard from person where user_name='"+str_name+"' and personDelete=0 union select realName,idcard from user where name='"+str_name+"'";
 	            rs = stmt.executeQuery(str_sql);
 	            
 	            out.write(resultSetToJson(rs));

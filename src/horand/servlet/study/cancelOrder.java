@@ -53,18 +53,26 @@ public class cancelOrder extends HttpServlet {
 	            stmt = conn.createStatement();
 	            String req_orderNum = request.getParameter("orderNum");
 	            String str_date="";
+	            String str_longDate="";
 	            String str_trainNum="";
 	            String str_seatType="";
+	            String str_phone="";
+	            String str_realName="";
+	            int str_queueNum=-1000;
 	            int int_seatType=0;
 	            String str_orderType="0";
 	            int count=0;
-	            rs_query = stmt.executeQuery("select * from bookings where orderNum="+req_orderNum);
+	            rs_query = stmt.executeQuery("select * from bookings,user where email=name and orderNum="+req_orderNum);
 	            //out.write(resultSetToJson(rs_query));
 	            while (rs_query.next()) {
+	            	str_longDate = rs_query.getString("srcDate");
 	            	str_date = rs_query.getString("srcDate").substring(0, 10);
 	            	str_trainNum = rs_query.getString("trainNum");
 	            	str_seatType = rs_query.getString("orderSeatType");
 	            	str_orderType = rs_query.getString("orderType");
+	            	str_queueNum = Integer.parseInt(rs_query.getString("queneNum"));
+	            	str_phone = rs_query.getString("phoneNum");
+	            	str_realName = rs_query.getString("realName");
 	            	if(!(rs_query.getString("personName1").equals(""))){
 	            		count++;
 	            	}
@@ -90,13 +98,30 @@ public class cancelOrder extends HttpServlet {
 	            //out.println(count+str_date+str_trainNum+int_seatType);
 	            
 	            if(!str_orderType.equals("0")){
-	            	rs = stmt.executeUpdate("update ticketInfo set leftTicket"+int_seatType+" = leftTicket"+int_seatType+" + "+count
-	            			+" where date='"+str_date+"' and trainNum='"+str_trainNum+"'");
+	            	
+	            	rs_query = stmt.executeQuery("select orderNum,max(queneNum) as maxQueueNum from bookings where queneNum<0 and orderType=0 and orderDelete=0 and srcDate='"+str_longDate+"' and trainNum='"+str_trainNum+"'");
+	            	if(rs_query.next()) {
+	            			rs = stmt.executeUpdate("update bookings set orderType=1 where orderNum="+rs_query.getString("orderNum"));
+	            			rs = stmt.executeUpdate("update bookings set orderDelete=1 where orderNum="+req_orderNum);
+	            			CreateRandomCode.sendMessage(str_phone,str_realName);
+	            		
+	              	}else{
+		            	rs = stmt.executeUpdate("update ticketInfo set leftTicket"+int_seatType+" = leftTicket"+int_seatType+" + "+count
+		            			+" where date='"+str_date+"' and trainNum='"+str_trainNum+"'");
+		            	rs = stmt.executeUpdate("update bookings set orderDelete=1 where orderNum="+req_orderNum);
+	              	}
+	            	if (rs_query != null) {
+		                rs_query.close();
+		            }
+	            }else{
+	            	rs = stmt.executeUpdate("update bookings set queneNum=queneNum+1 where queneNum<"+str_queueNum+" and orderDelete=0 and srcDate='"+str_longDate+"' and trainNum='"+str_trainNum+"'");
+	            	rs = stmt.executeUpdate("update bookings set orderDelete=1 where orderNum="+req_orderNum);
+	            	
 	            }
-	            rs = stmt.executeUpdate("update bookings set orderDelete=1 where orderNum="+req_orderNum);
+	            
 	            conn.commit();
 	            conn.setAutoCommit(true);
-	            if(rs>=1){
+	            if(rs>=0){
 	            	out.write("{\"success\":\"1\"}");
 	            }
 	            else{

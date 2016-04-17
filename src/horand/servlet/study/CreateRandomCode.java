@@ -5,6 +5,14 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.Statement;
 
+import com.taobao.api.ApiException;
+import com.taobao.api.DefaultTaobaoClient;
+import com.taobao.api.TaobaoClient;
+import com.taobao.api.request.AlibabaAliqinFcSmsNumSendRequest;
+import com.taobao.api.response.AlibabaAliqinFcSmsNumSendResponse;
+
+import net.sf.json.JSONObject;
+
 public class CreateRandomCode {
 
 	public static String createRandom(boolean numberFlag, int length){
@@ -66,5 +74,29 @@ public class CreateRandomCode {
          
 		
 		return result;
+	}
+	
+	public static boolean sendMessage(String phone , String name){
+		
+		//发送短信
+		TaobaoClient client = new DefaultTaobaoClient("http://gw.api.taobao.com/router/rest", "23340812", "c4b0bf75059430a7505c2d11a847879e");
+		AlibabaAliqinFcSmsNumSendRequest req = new AlibabaAliqinFcSmsNumSendRequest();
+		req.setExtend("123456");
+		req.setSmsType("normal");
+		req.setSmsFreeSignName("帅客出行");
+		req.setSmsParamString("{\"name\":\""+name+"\"}");
+		req.setRecNum(phone);
+		req.setSmsTemplateCode("SMS_7375123");
+		AlibabaAliqinFcSmsNumSendResponse rsp;
+		try {
+			rsp = client.execute(req);
+			JSONObject result_array = JSONObject.fromObject(rsp.getBody());
+			if(result_array.getJSONObject("alibaba_aliqin_fc_sms_num_send_response").getJSONObject("result").get("success").equals(true)){
+				return true;
+			}
+		} catch (Exception e) {
+			return false;
+		}
+		return false;
 	}
 }

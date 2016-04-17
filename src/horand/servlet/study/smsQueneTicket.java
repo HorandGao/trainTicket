@@ -47,7 +47,7 @@ public class smsQueneTicket extends HttpServlet {
 		AlibabaAliqinFcSmsNumSendRequest req = new AlibabaAliqinFcSmsNumSendRequest();
 		req.setExtend("123456");
 		req.setSmsType("normal");
-		req.setSmsFreeSignName("大鱼测试");
+		req.setSmsFreeSignName("帅客出行");
 		req.setSmsParamString("{\"name\":\""+str_name+"\"}");
 		req.setRecNum(phoneNum);
 		req.setSmsTemplateCode("SMS_7375123");
