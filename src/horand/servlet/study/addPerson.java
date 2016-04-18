@@ -69,7 +69,7 @@ public class addPerson extends HttpServlet {
 	            resultSet.close();
 	            
 	            
-	            rs = stmt.executeUpdate("insert into person values(NULL,'"+reqRealName+"','"+reqIDcard+"','"+reqName+"')");
+	            rs = stmt.executeUpdate("insert into person values(NULL,'"+reqRealName+"','"+reqIDcard+"','"+reqName+"',0)");
 	            if(rs>=1){
 	            	out.write("{\"success\":\"1\",\"msg\":\"成功\"}");
 	            }

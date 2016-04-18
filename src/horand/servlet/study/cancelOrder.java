@@ -62,7 +62,7 @@ public class cancelOrder extends HttpServlet {
 	            int int_seatType=0;
 	            String str_orderType="0";
 	            int count=0;
-	            rs_query = stmt.executeQuery("select * from bookings,user where email=name and orderNum="+req_orderNum);
+	            rs_query = stmt.executeQuery("select * from bookings where  orderNum="+req_orderNum);
 	            //out.write(resultSetToJson(rs_query));
 	            while (rs_query.next()) {
 	            	str_longDate = rs_query.getString("srcDate");
@@ -71,8 +71,6 @@ public class cancelOrder extends HttpServlet {
 	            	str_seatType = rs_query.getString("orderSeatType");
 	            	str_orderType = rs_query.getString("orderType");
 	            	str_queueNum = Integer.parseInt(rs_query.getString("queneNum"));
-	            	str_phone = rs_query.getString("phoneNum");
-	            	str_realName = rs_query.getString("realName");
 	            	if(!(rs_query.getString("personName1").equals(""))){
 	            		count++;
 	            	}
@@ -99,15 +97,20 @@ public class cancelOrder extends HttpServlet {
 	            
 	            if(!str_orderType.equals("0")){
 	            	
-	            	rs_query = stmt.executeQuery("select orderNum,max(queneNum) as maxQueueNum from bookings where queneNum<0 and orderType=0 and orderDelete=0 and srcDate='"+str_longDate+"' and trainNum='"+str_trainNum+"'");
-	            	if(rs_query.next()) {
+	            	rs_query = stmt.executeQuery("select orderNum,max(queneNum) as maxQueueNum,phoneNum,realName from bookings,user where email=name and queneNum<0 and orderType=0 and orderDelete=0 and srcDate='"+str_longDate+"' and trainNum='"+str_trainNum+"'");
+	            	
+	            	if(rs_query.next() && rs_query.getString("phoneNum")!=null) {
+	            			str_phone = rs_query.getString("phoneNum");
+		            		str_realName = rs_query.getString("realName");
 	            			rs = stmt.executeUpdate("update bookings set orderType=1 where orderNum="+rs_query.getString("orderNum"));
 	            			rs = stmt.executeUpdate("update bookings set orderDelete=1 where orderNum="+req_orderNum);
 	            			CreateRandomCode.sendMessage(str_phone,str_realName);
 	            		
 	              	}else{
-		            	rs = stmt.executeUpdate("update ticketInfo set leftTicket"+int_seatType+" = leftTicket"+int_seatType+" + "+count
-		            			+" where date='"+str_date+"' and trainNum='"+str_trainNum+"'");
+	              		String str_sql = "update ticketInfo set leftTicket"+int_seatType+" = leftTicket"+int_seatType+" + "+count
+		            			+" where date='"+str_date+"' and trainNum='"+str_trainNum+"'";
+		            	rs = stmt.executeUpdate(str_sql);
+		            	
 		            	rs = stmt.executeUpdate("update bookings set orderDelete=1 where orderNum="+req_orderNum);
 	              	}
 	            	if (rs_query != null) {
