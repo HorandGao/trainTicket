@@ -8,6 +8,7 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Timestamp;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -81,11 +82,11 @@ public class cancelOrder extends HttpServlet {
 	            		count++;
 	            	}
 	            }
-	            if(str_seatType.equals("商务座")||str_seatType.equals("软 卧")){
+	            if(str_seatType.equals("鍟嗗姟搴�")||str_seatType.equals("杞� 鍗�")){
 	            	int_seatType = 1;
-	            }else if(str_seatType.equals("一等座")||str_seatType.equals("硬 卧")){
+	            }else if(str_seatType.equals("涓�绛夊骇")||str_seatType.equals("纭� 鍗�")){
 	            	int_seatType = 2;
-	            }else if(str_seatType.equals("二等座")||str_seatType.equals("硬 座")){
+	            }else if(str_seatType.equals("浜岀瓑搴�")||str_seatType.equals("纭� 搴�")){
 	            	int_seatType = 3;
 	            }
 	            
@@ -102,7 +103,7 @@ public class cancelOrder extends HttpServlet {
 	            	if(rs_query.next() && rs_query.getString("phoneNum")!=null) {
 	            			str_phone = rs_query.getString("phoneNum");
 		            		str_realName = rs_query.getString("realName");
-	            			rs = stmt.executeUpdate("update bookings set orderType=1 where orderNum="+rs_query.getString("orderNum"));
+	            			rs = stmt.executeUpdate("update bookings set orderType=1,orderDate=now() where orderNum="+rs_query.getString("orderNum"));
 	            			rs = stmt.executeUpdate("update bookings set orderDelete=1 where orderNum="+req_orderNum);
 	            			CreateRandomCode.sendMessage(str_phone,str_realName);
 	            		
@@ -160,18 +161,18 @@ public class cancelOrder extends HttpServlet {
 
 	public String resultSetToJson(ResultSet rs) throws SQLException,JSONException  
     {  
-       // json数组  
+       // json鏁扮粍  
        JSONArray array = new JSONArray();  
         
-       // 获取列数  
+       // 鑾峰彇鍒楁暟  
        ResultSetMetaData metaData = rs.getMetaData();  
        int columnCount = metaData.getColumnCount();  
         
-       // 遍历ResultSet中的每条数据  
+       // 閬嶅巻ResultSet涓殑姣忔潯鏁版嵁  
         while (rs.next()) {  
             JSONObject jsonObj = new JSONObject();  
              
-            // 遍历每一列  
+            // 閬嶅巻姣忎竴鍒�  
             for (int i = 1; i <= columnCount; i++) {  
                 String columnName =metaData.getColumnLabel(i);  
                 String value = rs.getString(columnName);  
