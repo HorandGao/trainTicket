@@ -82,11 +82,11 @@ public class cancelOrder extends HttpServlet {
 	            		count++;
 	            	}
 	            }
-	            if(str_seatType.equals("鍟嗗姟搴�")||str_seatType.equals("杞� 鍗�")){
+	            if(str_seatType.equals("商务座")||str_seatType.equals("软 卧")){
 	            	int_seatType = 1;
-	            }else if(str_seatType.equals("涓�绛夊骇")||str_seatType.equals("纭� 鍗�")){
+	            }else if(str_seatType.equals("一等座")||str_seatType.equals("硬 卧")){
 	            	int_seatType = 2;
-	            }else if(str_seatType.equals("浜岀瓑搴�")||str_seatType.equals("纭� 搴�")){
+	            }else if(str_seatType.equals("二等座")||str_seatType.equals("硬 座")){
 	            	int_seatType = 3;
 	            }
 	            
@@ -161,18 +161,18 @@ public class cancelOrder extends HttpServlet {
 
 	public String resultSetToJson(ResultSet rs) throws SQLException,JSONException  
     {  
-       // json鏁扮粍  
+		// json数组 
        JSONArray array = new JSONArray();  
         
-       // 鑾峰彇鍒楁暟  
+    // 获取列数  
        ResultSetMetaData metaData = rs.getMetaData();  
        int columnCount = metaData.getColumnCount();  
         
-       // 閬嶅巻ResultSet涓殑姣忔潯鏁版嵁  
+    // 遍历ResultSet中的每条数据  
         while (rs.next()) {  
             JSONObject jsonObj = new JSONObject();  
              
-            // 閬嶅巻姣忎竴鍒�  
+         // 遍历每一列  
             for (int i = 1; i <= columnCount; i++) {  
                 String columnName =metaData.getColumnLabel(i);  
                 String value = rs.getString(columnName);  
